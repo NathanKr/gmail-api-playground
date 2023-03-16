@@ -1,0 +1,24 @@
+{
+  "name": "gmail-api-poc",
+  "version": "1.0.0",
+  "description": "<h2>Motivation</h2>\r POC for gmail api send using node server",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NathanKr/gmail-api-poc.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NathanKr/gmail-api-poc/issues"
+  },
+  "homepage": "https://github.com/NathanKr/gmail-api-poc#readme",
+  "dependencies": {
+    "@google-cloud/local-auth": "^2.1.1",
+    "googleapis": "^113.0.0"
+  }
+}
