@@ -1,55 +1,68 @@
-'use strict';
+// --- chat GPT code tweaked
 
-const path = require('path');
-const {google} = require('googleapis');
-const {authenticate} = require('@google-cloud/local-auth');
+const fs = require("fs");
+const { google } = require("googleapis");
+const { JWT } = require("google-auth-library");
+const path = require("path");
 
-const gmail = google.gmail('v1');
 
-async function runSample() {
-  // Obtain user credentials to use for the request
-  const auth = await authenticate({
-    keyfilePath: path.join(__dirname, '../oauth2.keys.json'),
-    scopes: [
-      'https://mail.google.com/',
-      'https://www.googleapis.com/auth/gmail.modify',
-      'https://www.googleapis.com/auth/gmail.compose',
-      'https://www.googleapis.com/auth/gmail.send',
-    ],
-  });
-  google.options({auth});
+const SECRET_FILE = "gmail-api-poc-380809-583fc07156fa.json";
+const jsonCredentialsPath = path.join(__dirname, "secret", SECRET_FILE);
+const keys = JSON.parse(fs.readFileSync(jsonCredentialsPath, "utf8"));
 
-  // You can use UTF-8 encoding for the subject using the method below.
-  // You can also just use a plain string if you don't need anything fancy.
-  const subject = '🤘 Hello 🤘';
-  const utf8Subject = `=?utf-8?B?${Buffer.from(subject).toString('base64')}?=`;
-  const messageParts = [
-    'From: Justin Beckwith <beckwith@google.com>',
-    'To: Justin Beckwith <beckwith@google.com>',
-    'Content-Type: text/html; charset=utf-8',
-    'MIME-Version: 1.0',
-    `Subject: ${utf8Subject}`,
-    '',
-    'This is a message just to say hello.',
-    'So... <b>Hello!</b>  🤘❤️😎',
-  ];
-  const message = messageParts.join('\n');
 
-  // The body needs to be base64url encoded.
-  const encodedMessage = Buffer.from(message)
-    .toString('base64')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
+const GMAIL_FROM = "nathan@nathankrasney.com";
+const GMAIL_TO = "natankrasaney@gmail.com";
+const USER_EMAIL = "nathan@nathankrasney.com";
 
-  const res = await gmail.users.messages.send({
-    userId: 'me',
-    requestBody: {
-      raw: encodedMessage,
-    },
-  });
-  console.log(res.data);
-  return res.data;
-}
 
-runSample();
+
+const sendEmail = async (subject, message) => {
+  try {
+    const auth = new JWT({
+        email: keys.client_email,
+        key: keys.private_key,
+        scopes: [
+        'https://www.googleapis.com/auth/gmail.send',],
+        subject: USER_EMAIL,
+      });
+
+    // Authorize the client and create a Gmail API client
+    const client = await google.gmail({
+      version: "v1",
+      auth,
+    });
+
+    // Create a message object
+    const messageParts = [
+      `From: ${GMAIL_FROM}`,
+      `To: ${GMAIL_TO}`,
+      `Subject: ${subject}`,
+      "",
+      `${message}`,
+    ];
+    const messageText = messageParts.join("\n");
+    const messageBase64 = Buffer.from(messageText).toString("base64");
+    const messageObject = {
+      raw: messageBase64,
+    };
+
+    // Send the message
+    const response = await client.users.messages.send({
+      userId: "me",
+      resource: messageObject,
+    });
+    console.log("Message sent:", response.data);
+
+    // Return the response
+    return response.data;
+  } catch (error) {
+    console.error("Error sending message:", error);
+    throw error;
+  }
+};
+
+// Example usage
+sendEmail("Test Subject", "Hello, this is a test message!")
+  .then(() => console.log("Email sent successfully!"))
+  .catch(() => console.error("Email sending failed."));
