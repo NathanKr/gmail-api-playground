@@ -10,10 +10,10 @@ const SECRET_FILE = "gmail-api-poc-380809-583fc07156fa.json";
 const jsonCredentialsPath = path.join(__dirname, "secret", SECRET_FILE);
 const keys = JSON.parse(fs.readFileSync(jsonCredentialsPath, "utf8"));
 
-
-const GMAIL_FROM = "nathan@nathankrasney.com";
-const GMAIL_TO = "natankrasaney@gmail.com";
-const USER_EMAIL = "nathan@nathankrasney.com";
+const WORKSPACE_EMAIL = "nathan@nathankrasney.com"
+const GMAIL_FROM = WORKSPACE_EMAIL;
+const GMAIL_TO = "natankrasney@gmail.com";// sent success but email is wrong
+const USER_EMAIL = WORKSPACE_EMAIL;
 
 
 
