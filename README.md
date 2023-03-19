@@ -124,7 +124,18 @@ POC for gmail api send using node server
 
 </li>
 <li>Export the service credential file , but git ignored</li>
-<li>Grant the service account access to the workspace domain (this remind Share the resource - google sheet file with client_email done <a href='https://github.com/NathanKr/google-sheets-api-playground'>here</a> )</li>
+<li>Grant the service account access to the workspace domain (this remind Share the resource - google sheet file with client_email done <a href='https://github.com/NathanKr/google-sheets-api-playground'>here</a> )
+
+This is also called : Delegating domain-wide authority to the service account
+<ul>
+<li>Copy client_id from the credential file</li>
+<li>Navigate to google admin console - seems that only workspace account are allowed - nathan@nathankrasney.com</li>
+<li>Navigate to Security->Access and data control->Api controls->Domain Wide </li><li>Delegation->Manage Domain Wide Delegation->Add New</li>
+<li>Add client_id from the credential file and choose scope e.g. for gmail which define the operation e.g. to send email choose https://www.googleapis.com/auth/gmail.send</li>
+<li>Click authorize</li>
+</ul>
+
+</li>
 <li>Use the credential file (must be on .gitignore) inside your application which uses gmail api</li>
 </ol>
 
